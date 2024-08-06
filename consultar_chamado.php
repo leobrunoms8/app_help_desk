@@ -1,5 +1,23 @@
 <?php
-  require_once "validador_acesso.php"
+  require_once "validador_acesso.php";
+?>
+
+<?php
+
+  $chamados = array();
+
+  // Abrir o arquivo com a lista de chamados
+
+  $arquivo = fopen('../../app_help_desk/arquivo.hd','r');
+
+  //percorrer enquanto houver registros
+  while(!feof($arquivo)){ // testa o fim de um arquivo 
+    $registro = fgets($arquivo); // atribui o conteúdo da linha na variável registro
+    $chamados[] = $registro;
+  }
+
+  fclose($arquivo);
+
 ?>
 <html>
   <head>
@@ -42,23 +60,33 @@
             
             <div class="card-body">
               
+             
+            <?php foreach($chamados as $chamado){ ?>
+
+              <?php
+                $chamado_dados = explode('#', $chamado);
+
+                if($_SESSION['perfil_id'] == 2){ // verifica se o perfil é adm
+                  if($_SESSION['id'] != $chamado_dados[0]){ // pula os dados que são de um perfildiferente do dele
+                    continue;
+                  }
+                }
+
+                if(count($chamado_dados)<3){ // verifica se o array está faltando informação
+                  continue;
+                }
+              ?>
+
               <div class="card mb-3 bg-light">
                 <div class="card-body">
-                  <h5 class="card-title">Título do chamado...</h5>
-                  <h6 class="card-subtitle mb-2 text-muted">Categoria</h6>
-                  <p class="card-text">Descrição do chamado...</p>
+                <h5 class="card-title"><?= $chamado_dados[1] ?></h5>
+                <h6 class="card-subtitle mb-2 text-muted"><?= $chamado_dados[2] ?></h6>
+                <p class="card-text"><?= $chamado_dados[3] ?></p>
 
                 </div>
               </div>
-
-              <div class="card mb-3 bg-light">
-                <div class="card-body">
-                  <h5 class="card-title">Título do chamado...</h5>
-                  <h6 class="card-subtitle mb-2 text-muted">Categoria</h6>
-                  <p class="card-text">Descrição do chamado...</p>
-
-                </div>
-              </div>
+                
+              <?php } ?>
 
               <div class="row mt-5">
                 <div class="col-6">
